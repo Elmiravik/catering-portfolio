@@ -54,9 +54,9 @@
             
             <div class="portfolio-grid">
                 <div class="portfolio-item">
-                    <div class="portfolio-image">
+                    <button class="portfolio-image portfolio-open" data-lightbox-target="#appetizers-lightbox" aria-label="Открыть слайдер фуршетных закусок">
                         <img src="Фотки/dish1.jpg" alt="Фуршетные закуски — канапе" loading="lazy">
-                    </div>
+                    </button>
                     <div class="portfolio-info">
                         <h3>Фуршетные закуски</h3>
                         <p>Элегантные канапе и мини-закуски</p>
@@ -76,9 +76,9 @@
                 </div>
                 
                 <div class="portfolio-item">
-                    <div class="portfolio-image">
+                    <button class="portfolio-image portfolio-open" data-lightbox-target="#desserts-lightbox" aria-label="Открыть слайдер десертов">
                         <img src="Фотки/dessert1.jpg" alt="Десерты — пирожные и фрукты" loading="lazy">
-                    </div>
+                    </button>
                     <div class="portfolio-info">
                         <h3>Десерты</h3>
                         <p>Сладкие завершения праздника</p>
@@ -115,7 +115,6 @@
                     <p>Легкие закуски и напитки для неформальных встреч</p>
                     <ul>
                         <li>Канапе и мини-закуски</li>
-                        <li>Напитки и коктейли</li>
                         <li>Оформление стола</li>
                     </ul>
                 </div>
@@ -228,7 +227,7 @@
                         <i class="fab fa-telegram"></i>
                         <div>
                             <h3>Telegram</h3>
-                            <p>@Tatyana_klimovich</p>
+                            <p><a href="https://t.me/klimovich_tatsiana" target="_blank">@klimovich_tatsiana</a></p>
                         </div>
                     </div>
                     
@@ -336,5 +335,54 @@
         </div>
     </div>
 
+    <!-- Fullscreen Lightbox for Desserts -->
+<div class="lightbox" id="desserts-lightbox" aria-hidden="true">
+    <div class="lightbox-backdrop" data-lightbox-close></div>
+    <div class="lightbox-content" role="dialog" aria-modal="true">
+        <button class="lightbox-close" aria-label="Закрыть" data-lightbox-close>×</button>
+        <div class="lightbox-slider" data-slider>
+            <div class="slides">
+                <img src="Фотки/dessert1.jpg" alt="Десерт 1">
+                <img src="Фотки/dessert2.jpg" alt="Десерт 2">
+                <img src="Фотки/dessert3.jpg" alt="Десерт 3">
+                <img src="Фотки/dessert4.jpg" alt="Десерт 4">
+                <img src="Фотки/dessert5.jpg" alt="Десерт 5">
+                <img src="Фотки/dessert6.jpg" alt="Десерт 6">
+                <img src="Фотки/dessert7.jpg" alt="Десерт 7">
+                <img src="Фотки/dessert8.jpg" alt="Десерт 8">
+            </div>
+            <button class="slider-btn prev" aria-label="Предыдущее">‹</button>
+            <button class="slider-btn next" aria-label="Следующее">›</button>
+            <div class="slider-dots"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Fullscreen Lightbox for Appetizers -->
+<div class="lightbox" id="appetizers-lightbox" aria-hidden="true">
+    <div class="lightbox-backdrop" data-lightbox-close></div>
+    <div class="lightbox-content" role="dialog" aria-modal="true">
+        <button class="lightbox-close" aria-label="Закрыть" data-lightbox-close>×</button>
+        <div class="lightbox-slider" data-slider>
+            <div class="slides">
+                <img src="Фотки/dish1.jpg" alt="Фуршетная закуска 1">
+                <img src="Фотки/dish2.jpg" alt="Фуршетная закуска 2">
+                <img src="Фотки/dish3.jpg" alt="Фуршетная закуска 3">
+                <img src="Фотки/dish4.jpg" alt="Фуршетная закуска 4">
+                <img src="Фотки/dish5.jpg" alt="Фуршетная закуска 5">
+                <img src="Фотки/dish6.jpg" alt="Фуршетная закуска 6">
+                <img src="Фотки/dish7.jpg" alt="Фуршетная закуска 7">
+                <img src="Фотки/dish8.jpg" alt="Фуршетная закуска 8">
+                <img src="Фотки/dish9.jpg" alt="Фуршетная закуска 9">
+            </div>
+            <button class="slider-btn prev" aria-label="Предыдущее">‹</button>
+            <button class="slider-btn next" aria-label="Следующее">›</button>
+            <div class="slider-dots"></div>
+        </div>
+    </div>
+</div>
+
     <script src="script.js"></script>
+</body>
+</html>
 
