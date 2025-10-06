@@ -342,18 +342,103 @@ function initSliders() {
     sliders.forEach(slider => setupSlider(slider));
 }
 
-// Lightbox open/close and focus trapping
+// Функция для настройки слайдера
+function setupSlider(slider) {
+    const slides = slider.querySelector('.slides');
+    const images = slider.querySelectorAll('.slides img');
+    const prevBtn = slider.querySelector('.slider-btn.prev');
+    const nextBtn = slider.querySelector('.slider-btn.next');
+    const dotsContainer = slider.querySelector('.slider-dots');
+    
+    let currentSlide = 0;
+    const totalSlides = images.length;
+    
+    // Создаем точки-индикаторы
+    if (dotsContainer) {
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('button');
+            dot.classList.add('slider-dot');
+            dot.setAttribute('aria-label', `Перейти к слайду ${i + 1}`);
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        }
+    }
+    
+    function updateSlider() {
+        // Скрываем все слайды
+        images.forEach(img => {
+            img.style.display = 'none';
+        });
+        
+        // Показываем текущий слайд
+        if (images[currentSlide]) {
+            images[currentSlide].style.display = 'block';
+        }
+        
+        // Обновляем точки
+        updateDots();
+    }
+    
+    function updateDots() {
+        const dots = slider.querySelectorAll('.slider-dot');
+        dots.forEach((dot, index) => {
+            if (index === currentSlide) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    }
+    
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateSlider();
+    }
+    
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateSlider();
+    }
+    
+    function goToSlide(index) {
+        currentSlide = index;
+        updateSlider();
+    }
+    
+    // Добавляем обработчики событий
+    if (prevBtn) {
+        prevBtn.addEventListener('click', prevSlide);
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', nextSlide);
+    }
+    
+    // Инициализируем слайдер
+    updateSlider();
+    
+    // Добавляем навигацию с клавиатуры
+    slider.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') prevSlide();
+        if (e.key === 'ArrowRight') nextSlide();
+    });
+}
+
+// Обновленная функция инициализации лайтбоксов
 function initLightbox() {
     document.querySelectorAll('.portfolio-open').forEach(btn => {
         btn.addEventListener('click', () => {
             const targetSel = btn.getAttribute('data-lightbox-target');
             const lb = document.querySelector(targetSel);
             if (!lb) return;
+            
             lb.setAttribute('aria-hidden', 'false');
-            // focus first control
+            
+            // Фокусируемся на кнопке закрытия
             const close = lb.querySelector('[data-lightbox-close]');
             if (close) close.focus();
-            // re-init slider inside (in case images loaded later)
+            
+            // Инициализируем слайдер внутри лайтбокса
             const slider = lb.querySelector('[data-slider]');
             if (slider && !slider.dataset.inited) {
                 setupSlider(slider);
@@ -362,6 +447,7 @@ function initLightbox() {
         });
     });
     
+    // Закрытие лайтбокса
     document.querySelectorAll('[data-lightbox-close]').forEach(el => {
         el.addEventListener('click', () => {
             const lb = el.closest('.lightbox');
@@ -369,6 +455,7 @@ function initLightbox() {
         });
     });
     
+    // Закрытие по ESC
     document.querySelectorAll('.lightbox').forEach(lb => {
         lb.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') lb.setAttribute('aria-hidden', 'true');
