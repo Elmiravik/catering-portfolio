@@ -1,14 +1,15 @@
 // Mobile Navigation Toggle
 document.addEventListener('DOMContentLoaded', function() {
-    const navToggle = document.querySelector('.nav-toggle');
-    const navMenu = document.querySelector('.nav-menu');
-    
-    if (navToggle && navMenu) {
-        navToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-            navToggle.classList.toggle('active');
-        });
-    }
+    // Mobile Navigation Toggle
+const navToggle = document.querySelector('.nav-toggle');
+const navMenu = document.querySelector('.nav-menu');
+
+if (navToggle) {
+    navToggle.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+        navToggle.classList.toggle('active');
+    });
+}
     
     // Close mobile menu when clicking on a link
     const navLinks = document.querySelectorAll('.nav-menu a');
@@ -286,6 +287,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 150);
         });
     });
+
+    // Initialize sliders and lightbox
+    initSliders();
+    initLightbox();
 });
 
 // Add CSS for mobile menu
@@ -330,3 +335,220 @@ const mobileMenuStyles = `
 const styleSheet = document.createElement('style');
 styleSheet.textContent = mobileMenuStyles;
 document.head.appendChild(styleSheet);
+
+// Simple slider implementation
+function initSliders() {
+    const sliders = document.querySelectorAll('[data-slider]');
+    sliders.forEach(slider => setupSlider(slider));
+}
+
+// Lightbox open/close and focus trapping
+function initLightbox() {
+    document.querySelectorAll('.portfolio-open').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetSel = btn.getAttribute('data-lightbox-target');
+            const lb = document.querySelector(targetSel);
+            if (!lb) return;
+            lb.setAttribute('aria-hidden', 'false');
+            // focus first control
+            const close = lb.querySelector('[data-lightbox-close]');
+            if (close) close.focus();
+            // re-init slider inside (in case images loaded later)
+            const slider = lb.querySelector('[data-slider]');
+            if (slider && !slider.dataset.inited) {
+                setupSlider(slider);
+                slider.dataset.inited = 'true';
+            }
+        });
+    });
+    
+    document.querySelectorAll('[data-lightbox-close]').forEach(el => {
+        el.addEventListener('click', () => {
+            const lb = el.closest('.lightbox');
+            if (lb) lb.setAttribute('aria-hidden', 'true');
+        });
+    });
+    
+    document.querySelectorAll('.lightbox').forEach(lb => {
+        lb.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') lb.setAttribute('aria-hidden', 'true');
+        });
+    });
+}
+// Lightbox functionality
+class Lightbox {
+    constructor() {
+        this.lightbox = null;
+        this.slider = null;
+        this.slides = null;
+        this.currentSlide = 0;
+        this.totalSlides = 0;
+        this.init();
+    }
+
+    init() {
+        // Create lightbox event listeners
+        document.querySelectorAll('[data-lightbox-target]').forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = trigger.getAttribute('data-lightbox-target');
+                this.openLightbox(target);
+            });
+        });
+
+        // Close lightbox events
+        document.querySelectorAll('[data-lightbox-close]').forEach(closeBtn => {
+            closeBtn.addEventListener('click', () => {
+                this.closeLightbox();
+            });
+        });
+
+        // Close on backdrop click
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('lightbox-backdrop')) {
+                this.closeLightbox();
+            }
+        });
+
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.lightbox && this.lightbox.style.display === 'flex') {
+                this.closeLightbox();
+            }
+        });
+    }
+
+    openLightbox(target) {
+        this.lightbox = document.querySelector(target);
+        if (!this.lightbox) return;
+
+        this.lightbox.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        // Initialize slider
+        this.initSlider();
+    }
+
+    closeLightbox() {
+        if (this.lightbox) {
+            this.lightbox.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            this.currentSlide = 0;
+        }
+    }
+
+    initSlider() {
+        this.slider = this.lightbox.querySelector('[data-slider]');
+        if (!this.slider) return;
+
+        this.slides = this.slider.querySelectorAll('.slides img');
+        this.totalSlides = this.slides.length;
+
+        if (this.totalSlides === 0) return;
+
+        // Hide all slides except first
+        this.slides.forEach((slide, index) => {
+            slide.style.display = index === 0 ? 'block' : 'none';
+        });
+
+        // Add event listeners for navigation
+        const prevBtn = this.slider.querySelector('.slider-btn.prev');
+        const nextBtn = this.slider.querySelector('.slider-btn.next');
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                this.prevSlide();
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                this.nextSlide();
+            });
+        }
+
+        // Initialize dots if they exist
+        this.initDots();
+    }
+
+    prevSlide() {
+        this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+        this.updateSlider();
+    }
+
+    nextSlide() {
+        this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+        this.updateSlider();
+    }
+
+    updateSlider() {
+        // Hide all slides
+        this.slides.forEach(slide => {
+            slide.style.display = 'none';
+        });
+
+        // Show current slide
+        if (this.slides[this.currentSlide]) {
+            this.slides[this.currentSlide].style.display = 'block';
+        }
+
+        // Update dots
+        this.updateDots();
+    }
+
+    initDots() {
+        const dotsContainer = this.slider.querySelector('.slider-dots');
+        if (!dotsContainer) return;
+
+        // Clear existing dots
+        dotsContainer.innerHTML = '';
+
+        // Create dots
+        for (let i = 0; i < this.totalSlides; i++) {
+            const dot = document.createElement('button');
+            dot.classList.add('slider-dot');
+            dot.setAttribute('aria-label', `Перейти к слайду ${i + 1}`);
+            dot.addEventListener('click', () => {
+                this.goToSlide(i);
+            });
+            dotsContainer.appendChild(dot);
+        }
+
+        this.updateDots();
+    }
+
+    updateDots() {
+        const dots = this.slider.querySelectorAll('.slider-dot');
+        dots.forEach((dot, index) => {
+            if (index === this.currentSlide) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    }
+
+    goToSlide(index) {
+        this.currentSlide = index;
+        this.updateSlider();
+    }
+}
+
+// Initialize lightbox when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new Lightbox();
+});
+
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
